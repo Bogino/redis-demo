@@ -6,10 +6,10 @@ import org.redisson.api.RScoredSortedSet;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.RedisConnectionException;
 import org.redisson.config.Config;
-
 import java.util.Date;
 
 import static java.lang.System.out;
+
 
 public class RedisStorage {
 
@@ -30,9 +30,24 @@ public class RedisStorage {
 
     // Пример вывода всех ключей
     public void listKeys() {
-        Iterable<String> keys = rKeys.getKeys();
-        for(String key: keys) {
-            out.println("KEY: " + key + ", type:" + rKeys.getType(key));
+        int i = 0;
+        while (!onlineUsers.isEmpty()) {
+            i++;
+            String user = onlineUsers.pollFirst();
+
+            out.println("Выводим пользователя на главную страницу: " + user);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            logPageVisit(Integer.parseInt(user));
+            if (i == 10){
+                String randomUser = String.valueOf((int)(Math.random() * 20));
+                out.println("Пользователь " + randomUser + " оплатил услугу");
+                onlineUsers.add(Double.MIN_VALUE, randomUser);
+                i = 0;
+            }
         }
     }
 

@@ -15,10 +15,10 @@ public class RedisTest {
     private static final int DELETE_SECONDS_AGO = 2;
 
     // Допустим пользователи делают 500 запросов к сайту в секунду
-    private static final int RPS = 500;
+    private static final int RPS = 20;
 
     // И всего на сайт заходило 1000 различных пользователей
-    private static final int USERS = 1000;
+    private static final int USERS = 20;
 
     // Также мы добавим задержку между посещениями
     private static final int SLEEP = 1; // 1 миллисекунда
@@ -34,18 +34,14 @@ public class RedisTest {
 
         RedisStorage redis = new RedisStorage();
         redis.init();
-        // Эмулируем 10 секунд работы сайта
-        for(int seconds=0; seconds <= 10; seconds++) {
-            // Выполним 500 запросов
-            for(int request = 0; request <= RPS; request++) {
-                int user_id = new Random().nextInt(USERS);
-                redis.logPageVisit(user_id);
-                Thread.sleep(SLEEP);
-            }
-            redis.deleteOldEntries(DELETE_SECONDS_AGO);
-            int usersOnline = redis.calculateUsersNumber();
-            log(usersOnline);
+
+        for(int request = 0; request <= RPS; request++) {
+            int user_id = request;
+            redis.logPageVisit(user_id);
+            Thread.sleep(SLEEP);
         }
+        redis.deleteOldEntries(DELETE_SECONDS_AGO);
+        redis.listKeys();
         redis.shutdown();
     }
 }
